@@ -1,12 +1,12 @@
 package edu.bit.kuber_demo;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 @Service
 public class LogService {
 
-    private final String FILE_PATH = "app/logs/app.log";
+    @Value("${log.storage-path}")
+    private String FILE_PATH;
 
     @SneakyThrows
     public void writeLog(String line) {

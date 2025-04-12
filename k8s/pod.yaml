@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kuber-demo-web
+spec:
+  containers:
+    - name: kuber-demo-web
+      image: ivanuil/kuber_demo-web:latest
+      volumeMounts:
+        - mountPath: /app/logs
+          name: logs-volume
+        - mountPath: /app/config
+          name: config-volume
+      readinessProbe:
+        httpGet:
+          path: /actuator/health
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 3
+      livenessProbe:
+        httpGet:
+          path: /actuator/health
+          port: 8080
+        initialDelaySeconds: 5
+        periodSeconds: 3
+  volumes:
+    - name: logs-volume
+      emptyDir: {}
+    - name: config-volume
+      configMap:
+        name: kuber-demo-web-config

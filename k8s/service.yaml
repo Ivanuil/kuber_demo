@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kuber-demo-service
+spec:
+  type: ClusterIP
+  selector:
+    app: kuber-demo-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

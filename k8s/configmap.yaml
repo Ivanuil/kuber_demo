@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kuber-demo-web-config
+data:
+  logLevel: INFO
+  serverPort: "8080"
+  application.properties: |
+    log.storage-path=app/logs/app.log
