@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: log-collector
+spec:
+  selector:
+    matchLabels:
+      app: log-collector
+  template:
+    metadata:
+      labels:
+        app: log-collector
+    spec:
+      volumes:
+        - name: logs-volume
+          hostPath:
+            path: /var/log/shared
+            type: DirectoryOrCreate
+
+      containers:
+        - name: busybox
+          image: busybox
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - 'tail -F app/logs/file.log'
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs

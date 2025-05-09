@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kuber-demo-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: kuber-demo-app
+  template:
+    metadata:
+      labels:
+        app: kuber-demo-app
+    spec:
+      containers:
+        - name: kuber-demo-app
+          image: ivanuil/kuber_demo-web:latest
+          volumeMounts:
+            - name: logs-volume
+              mountPath: /app/logs
+      volumes:
+        - name: logs-volume
+          emptyDir: {}
