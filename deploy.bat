@@ -1,4 +1,13 @@
 
+REM Install istioctl tool
+curl -sL https://istio.io/downloadIstioctl | sh -
+export PATH=$HOME/.istioctl/bin:$PATH
+
+REM Install istio in k8s
+istioctl install -y
+call kubectl label namespace default istio-injection=enabled
+
+REM Deploy
 call kubectl apply -f .\k8s\configmap.yaml
 call kubectl apply -f .\k8s\deployment.yaml
 call kubectl apply -f .\k8s\service.yaml
