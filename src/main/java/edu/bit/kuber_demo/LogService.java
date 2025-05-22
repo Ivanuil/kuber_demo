@@ -1,6 +1,9 @@
 package edu.bit.kuber_demo;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.Timer;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +21,38 @@ public class LogService {
     @Value("${log.storage-path}")
     private String FILE_PATH;
 
+    private final Counter totalLogRequests;
+    private final Counter successLogRequests;
+    private final Counter failedLogRequests;
+    private final Timer logProcessingTimer;
+
+    public LogService(
+            @Qualifier("totalLogRequests") Counter totalLogRequests,
+            @Qualifier("successLogRequests") Counter successLogRequests,
+            @Qualifier("failedLogRequests") Counter failedLogRequests,
+            @Qualifier("logProcessingTimer") Timer logProcessingTimer) {
+        this.totalLogRequests = totalLogRequests;
+        this.successLogRequests = successLogRequests;
+        this.failedLogRequests = failedLogRequests;
+        this.logProcessingTimer = logProcessingTimer;
+    }
+
     @SneakyThrows
     public void writeLog(String line) {
+        totalLogRequests.increment();
+        var sample = Timer.start();
+
         createDirs();
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(FILE_PATH, true))) {
             writer.write(line);
             writer.newLine();
+            successLogRequests.increment();
         } catch (IOException e) {
+            failedLogRequests.increment();
             throw new RuntimeException(e);
         }
+        sample.stop(logProcessingTimer);
     }
 
     private void createDirs() throws IOException {
